@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>CAN RUN - สภาพอากาศ</title>
+    <script type="text/JavaScript" src="https://MomentJS.com/downloads/moment.js"></script>
+    <script src="https://unpkg.com/maplibre-gl@2.1.7/dist/maplibre-gl.js"></script>
+    <link href="https://unpkg.com/maplibre-gl@2.1.7/dist/maplibre-gl.css" rel="stylesheet" />
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="icon" href="/favicon.png" sizes="96x96" type="image/png">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            top: 0;
+            height: 100vh;
+            width: 100vw;
+            position: fixed;
+            z-index: -5;
+        }
+
+        #div {
+            display: block;
+        }
+
+        .mapboxgl-map,
+        .maplibregl-map {
+            font: 12px/20px Helvetica Neue, Arial, Helvetica, sans-serif;
+            overflow: hidden;
+            position: relative;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        }
+
+        .jss1 {
+            background-color: rgb(12, 12, 12);
+            right: 0;
+        }
+
+        .MuiGrid-grid-xs-5 {
+            flex-grow: 0;
+            max-width: 41.666667%;
+            flex-basis: 41.666667%;
+        }
+
+        .MuiGrid-item {
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        .MuiTypography-root {
+            margin: 0;
+        }
+
+        .MuiTypography-h6 {
+            font-size: 22px;
+            font-family: "Noto Sans Thai", sans-serif;
+            font-weight: 400;
+            line-height: 29.96px;
+        }
+
+        .MuiTypography-subtitle1 {
+            font-size: 18px;
+            font-family: "Noto Sans Thai", sans-serif;
+            font-weight: 400;
+            line-height: 24.52px;
+        }
+
+        .coordinates {
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            position: fixed;
+            bottom: 40px;
+            left: 10px;
+            padding: 5px 10px;
+            margin: 0;
+            font-size: 11px;
+            line-height: 18px;
+            border-radius: 3px;
+            display: none;
+        }
+
+        .btn {
+            background-color: #c8eae7;
+            border: none;
+            color: black;
+            padding: 12px 16px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            margin: 0;
+        }
+
+        /* Darker background on mouse-over */
+        .btn:hover {
+            background-color: #a3dbd6;
+        }
+    </style>
+    <style>
+        .chartWrapper {
+            position: relative;
+            background-color: rgb(12, 12, 12);
+        }
+
+        .chartWrapper>canvas {
+            position: absolute;
+            left: 0;
+            top: 0;
+            pointer-events: none;
+        }
+
+        .chartAreaWrapper {
+            /* height: 900px; */
+            /* overflowz: scroll; */
+        }
+    </style>
+</head>
+
+<body onload="renderChart(102.828641, 16.439502)">
+    <div id="map" style="width: 60%" class="maplibregl-map mapboxgl-map"></div>
+
+    <button class="btn MuiTypography-subtitle2" style="font-size:17px" onclick="history.back()"><i
+            class="fa fa-arrow-left" style="font-size:20px;"></i>&ensp;ย้อนกลับ</button>
+
+    <pre id="coordinates" class="coordinates"></pre>
+
+    <div class="" style="
+        background-color: rgb(12, 12, 12);
+        right: 0px;
+        width: 40%;
+        position: absolute;
+        height: 100%;
+      ">
+        <div style="padding: 15px">
+            <h6 class="MuiTypography-root MuiTypography-h6" style="color: white">
+                รายงานพยากรณ์สภาพอากาศจังหวัดขอนแก่น
+            </h6>
+            <h6 class="MuiTypography-root MuiTypography-subtitle1" style="color: #e6e6e6">
+                โปรดลากหมุด marker ไปจุดที่ท่านต้องการ หรือคลิ๊กที่จุดสถานีเพื่ออ่านรายละเอียด
+            </h6>
+        </div>
+        <pre id="title" class="MuiTypography-root MuiTypography-subtitle1"
+            style="color: white; text-align:center;"></pre>
+        <div class="chartWrapper">
+            <div class="AreaWrapper" class="chartAreaWrapper">
+                <canvas id="cond_chart" style="width: 100%;"></canvas>
+            </div>
+            <br>
+            <div class="AreaWrapper" class="chartAreaWrapper">
+                <canvas id="temp_chart" style="width: 100%;"></canvas>
+            </div>
+            <br>
+            <div class="AreaWrapper" class="chartAreaWrapper">
+                <canvas id="rh_chart" style="width: 100%;"></canvas>
+            </div>
+            <br>
+            <div class="AreaWrapper" class="chartAreaWrapper">
+                <canvas id="rain_chart" style="width: 100%;"></canvas>
+            </div>
+            <br>
+            <div class="AreaWrapper" class="chartAreaWrapper">
+                <canvas id="pressure_chart" style="width: 100%;"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.0/dist/chart.min.js"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="call_process.js"></script>
+    <script></script>
+
+    <script>
+        const dateLabel = [];
+        const condLabel = [];
+        const rhLabel = [];
+        const rainLabel = [];
+        const pressureLabel = [];
+        const maxtempLabel = [];
+        const mintempLabel = [];
+
+        var coordinates = document.getElementById('coordinates');
+
+        var map = new maplibregl.Map({
+            container: "map", // container id
+            style: "https://big-edu.vallarismaps.com/core/api/styles/1.0-beta/styles/62c132d30de3168d3d540972?api_key=wNPQJuGmx1V3KNf46GKUWHwLoEd3oX22t1sdfmUwgKyxgXbOf3AX8gWDn6w4axRT", // style URL
+
+            center: [102.828641, 16.439502],
+            zoom: 8.4,
+        });
+
+        var marker = new maplibregl.Marker({
+            draggable: true
+        })
+            .setLngLat([102.828641, 16.439502])
+            .addTo(map);
+
+        function confirmAlert(long, lat) {
+            let text = `ท่านต้องการรายงานพยากรณ์สภาพอากาศ ณ บริเวณ\nลองจิจูด: ${long} ละติจูด: ${lat} ใช่หรือไม่`;
+            if (confirm(text) == true) {
+                renderChart(long, lat)
+            } else {
+                return;
+            }
+        }
+
+        var featureCollection;
+        async function renderChart(long, lat) {
+            title.innerHTML = 'พยากรณ์สภาพอากาศ ณ บริเวณ<br />ลองจิจูด: ' + long + ' ละติจูด: ' + lat
+            featureCollection = await callProcess(long, lat)
+            console.log("This is returned from callProcess()")
+            console.log(featureCollection.features)
+
+            dateLabel.length = 0;
+            condLabel.length = 0;
+            rhLabel.length = 0;
+            rainLabel.length = 0;
+            pressureLabel.length = 0;
+            maxtempLabel.length = 0;
+            mintempLabel.length = 0;
+
+            features = featureCollection.features;
+
+            // console.log("This is features")
+            // console.log(features);
+
+            const newData = features.map((f) => ({
+                ...f.properties,
+            }));
+            // console.log("This is new data")
+            // console.log(newData);
+
+            var chart_data = [];
+            newData.reduce(function (res, value) {
+                let d = value['date & time'].substring(0, 10)
+                res[d] = {
+                    date: value['date & time'].substring(0, 10),
+                    cond: value['Weather condition'],
+                    rh: value['Relative humidity'],
+                    rain: value['Rain volume'],
+                    pressure: value['Sea level pressure'],
+                    max_temp: value['Max temperature'],
+                    min_temp: value['Min temperature'],
+                }
+                chart_data.push(res[d])
+                return res;
+            }, {});
+            const sorted = chart_data.sort((a, b) => (a.date > b.date && 1) || -1);
+            // console.log("Result!!")
+            // console.log(sorted)
+
+            const mapX = sorted.map((e) => {
+
+                dateLabel.push(e.date);
+                condLabel.push(e.cond);
+                rhLabel.push(e.rh);
+                rainLabel.push(e.rain);
+                pressureLabel.push(e.pressure);
+                maxtempLabel.push(e.max_temp);
+                mintempLabel.push(e.min_temp);
+
+            });
+
+            var cond_data = {
+                labels: dateLabel,
+                datasets: [{
+                    label: "ระดับสภาพอากาศ",
+                    backgroundColor: "rgba(204, 204, 204,0.2)",
+                    borderColor: "rgba(204, 204, 204,1)",
+                    borderWidth: 2,
+                    hoverBackgroundColor: "rgba(204, 204, 204,0.4)",
+                    hoverBorderColor: "rgba(204, 204, 204,1)",
+                    data: condLabel,
+                }]
+            };
+
+            var cond_options = {
+                maintainAspectRatio: false,
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            callback: function (value) {
+                                if (value === 1)
+                                    return 'ท้องฟ้าแจ่มใส';
+                                else if (value === 2)
+                                    return 'มีเมฆบางส่วน';
+                                else if (value === 3)
+                                    return 'เมฆเป็นส่วนมาก';
+                                else if (value === 4)
+                                    return 'มีเมฆมาก';
+                                else if (value === 5)
+                                    return 'ฝนตกเล็กน้อย';
+                                else if (value === 6)
+                                    return 'ฝนปานกลาง';
+                                else if (value === 7)
+                                    return 'ฝนตกหนัก';
+                                else if (value === 8)
+                                    return 'ฝนฟ้าคะนอง';
+                                else if (value === 9)
+                                    return 'อากาศหนาวจัด';
+                                else if (value === 10)
+                                    return 'อากาศหนาว';
+                                else if (value === 11)
+                                    return 'อากาศเย็น';
+                                else if (value === 12)
+                                    return 'อากาศร้อนจัด';
+                                else
+                                    return '';
+                            },
+                            beginAtZero: true,
+                        },
+                        gridLines: {
+                            color: "rgba(102, 102, 102, 0.5)",
+                        }
+                    }],
+                    xAxes: [{
+                        gridLines: {
+                            color: "rgba(102, 102, 102, 0.2)",
+                        }
+                    }],
+                },
+                title: {
+                    display: true,
+                    text: "สภาพอากาศล่วงหน้า 7 วัน",
+                    fontSize: 16
+                },
+            };
+
+            const cond_chart = new Chart(document.getElementById("cond_chart").getContext("2d"), {
+                type: 'bar',
+                options: cond_options,
+                data: cond_data
+            });
+
+            var rh_data = {
+                labels: dateLabel,
+                datasets: [{
+                    label: "ความชื้นสัมพัทธ์ (%RH)",
+                    backgroundColor: "rgba(46, 184, 184,0.2)",
+                    borderColor: "rgba(46, 184, 184,1)",
+                    borderWidth: 2,
+                    hoverBackgroundColor: "rgba(46, 184, 184,0.4)",
+                    hoverBorderColor: "rgba(46, 184, 184,1)",
+                    data: rhLabel,
+                }]
+            };
+
+            var rh_options = {
+                maintainAspectRatio: false,
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            // steps: 1,
+                        },
+                        gridLines: {
+                            color: "rgba(102, 102, 102, 0.5)",
+                        }
+                    }],
+                    xAxes: [{
+                        gridLines: {
+                            color: "rgba(102, 102, 102, 0.2)",
+                        }
+                    }],
+                },
+                title: {
+                    display: true,
+                    text: "ความชื้นสัมพัทธ์ล่วงหน้า 7 วัน",
+                    fontSize: 16
+                },
+            };
+
+            const rh_chart = new Chart(document.getElementById("rh_chart").getContext("2d"), {
+                type: 'bar',
+                options: rh_options,
+                data: rh_data
+            });
+
+            var rain_data = {
+                labels: dateLabel,
+                datasets: [{
+                    label: "ปริมาณน้ำฝน (มิลลิเมตร)",
+                    backgroundColor: "rgba(102, 153, 255,0.2)",
+                    borderColor: "rgba(102, 153, 255,1)",
+                    borderWidth: 2,
+                    hoverBackgroundColor: "rgba(102, 153, 255,0.4)",
+                    hoverBorderColor: "rgba(102, 153, 255,1)",
+                    data: rainLabel,
+                }]
+            };
+
+            var rain_options = {
+                maintainAspectRatio: false,
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            // steps: 1,
+                        },
+                        gridLines: {
+                            color: "rgba(102, 102, 102, 0.5)",
+                        }
+                    }],
+                    xAxes: [{
+                        gridLines: {
+                            color: "rgba(102, 102, 102, 0.2)",
+                        }
+                    }],
+                },
+                title: {
+                    display: true,
+                    text: "ปริมาณน้ำฝนล่วงหน้า 7 วัน",
+                    fontSize: 16
+                },
+            };
+
+            const rain_chart = new Chart(document.getElementById("rain_chart").getContext("2d"), {
+                type: 'bar',
+                options: rain_options,
+                data: rain_data
+            });
+
+            var pressure_data = {
+                labels: dateLabel,
+                datasets: [{
+                    label: "ความกดอากาศ (hPa)",
+                    backgroundColor: "rgba(170, 128, 255,0.2)",
+                    borderColor: "rgba(170, 128, 255,1)",
+                    borderWidth: 2,
+                    hoverBackgroundColor: "rgba(170, 128, 255,0.4)",
+                    hoverBorderColor: "rgba(170, 128, 255,1)",
+                    data: pressureLabel,
+                }]
+            };
+
+            var pressure_options = {
+                maintainAspectRatio: false,
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            // steps: 1,
+                        },
+                        gridLines: {
+                            color: "rgba(102, 102, 102, 0.5)",
+                        }
+                    }],
+                    xAxes: [{
+                        gridLines: {
+                            color: "rgba(102, 102, 102, 0.2)",
+                        }
+                    }],
+                },
+                title: {
+                    display: true,
+                    text: "ความกดอากาศล่วงหน้า 7 วัน",
+                    fontSize: 16
+                },
+            };
+
+            const pressure_chart = new Chart(document.getElementById("pressure_chart").getContext("2d"), {
+                type: 'bar',
+                options: pressure_options,
+                data: pressure_data
+            });
+
+            var temp_data = {
+                labels: dateLabel,
+                datasets: [{
+                    label: "อุณหภูมิสูงสุด (องศาเซลเซียส)",
+                    backgroundColor: "rgba(255, 80, 80,0.2)",
+                    borderColor: "rgba(255, 80, 80,1)",
+                    borderWidth: 2,
+                    hoverBackgroundColor: "rgba(255, 80, 80,0.4)",
+                    hoverBorderColor: "rgba(255, 80, 80,1)",
+                    data: maxtempLabel,
+                },
+                {
+                    label: "อุณหภูมิต่ำสุด (องศาเซลเซียส)",
+                    backgroundColor: "rgba(255, 195, 77,0.2)",
+                    borderColor: "rgba(255, 195, 77,1)",
+                    borderWidth: 2,
+                    hoverBackgroundColor: "rgba(255, 195, 77,0.4)",
+                    hoverBorderColor: "rgba(255, 195, 77,1)",
+                    data: mintempLabel,
+                }
+                ]
+            };
+
+            var temp_options = {
+                maintainAspectRatio: false,
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            // steps: 1,
+                        },
+                        gridLines: {
+                            color: "rgba(102, 102, 102, 0.5)",
+                        }
+                    }],
+                    xAxes: [{
+                        gridLines: {
+                            color: "rgba(102, 102, 102, 0.2)",
+                        }
+                    }],
+                },
+                title: {
+                    display: true,
+                    text: "อุณหภูมิสูงสุด/ต่ำสุดล่วงหน้า 7 วัน",
+                    fontSize: 16
+                },
+            };
+
+            const temp_chart = new Chart(document.getElementById("temp_chart").getContext("2d"), {
+                type: 'bar',
+                options: temp_options,
+                data: temp_data
+            });
+
+
+
+            cond_chart.update();
+            rh_chart.update();
+            rain_chart.update();
+            pressure_chart.update();
+            temp_chart.update();
+        }
+
+        function onDragEnd() {
+            var lngLat = marker.getLngLat();
+            coordinates.style.display = 'block';
+            coordinates.innerHTML =
+                'Longitude: ' + lngLat.lng + '<br />Latitude: ' + lngLat.lat;
+            confirmAlert(lngLat.lng, lngLat.lat)
+        }
+
+        map.on('click', 'tmd_station_label', function (e) {
+            var feature = e.features[0];
+            console.log("This is features from click")
+            console.log(feature);
+
+            var properties = feature.properties;
+
+            var description = `
+            <head><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai&display=swap" rel="stylesheet" /></head>
+            <style>
+                .MuiTypography-subtitle2 {
+                font-size: 16px;
+                font-family: "Noto Sans Thai", sans-serif;
+                line-height: 24.52px;
+            }</style>
+            <strong class="MuiTypography-subtitle2" style="font-weight: bold;">สถานีอุตุนิยมวิทยา ${properties.name_th}</strong>
+            <p class="MuiTypography-subtitle2" style="font-size: 13px;">อัปเดตล่าสุดเมื่อ: ${properties.date}<br>
+                อุณหภูมิ: ${properties.temperature}  ํC<br>
+                ความกดอากาศ: ${properties.mean_sea_level} hPa<br>
+                ความชื้นสัมพัทธ์: ${properties.humidity} %RH<br>
+                ปริมาณน้ำฝน: ${properties.rainfall} mm<br>
+                ความเร็วลม: ${properties.wind_speed} km/h<br>
+                ทิศทางลม: ${properties.wind_direction}  ํ
+            </p>`;
+
+            new maplibregl.Popup()
+                .setLngLat([properties.longitude, properties.latitude])
+                .setHTML(description)
+                .addTo(map);
+        });
+
+        // Change the cursor to a pointer when the mouse is over the places layer.
+        map.on('mouseenter', 'tmd_station_label', function () {
+            map.getCanvas().style.cursor = 'pointer';
+        });
+
+        // Change it back to a pointer when it leaves.
+        map.on('mouseleave', 'tmd_station_label', function () {
+            map.getCanvas().style.cursor = '';
+        });
+
+        marker.on('dragend', onDragEnd);
+
+    </script>
+</body>
+
+</html>

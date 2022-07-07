@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>CAN RUN - การกระจายตัวของประชากร</title>
+    <script type="text/JavaScript" src="https://MomentJS.com/downloads/moment.js"></script>
+    <script src="https://unpkg.com/maplibre-gl@2.1.7/dist/maplibre-gl.js"></script>
+    <link href="https://unpkg.com/maplibre-gl@2.1.7/dist/maplibre-gl.css" rel="stylesheet" />
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="icon" href="/favicon.png" sizes="96x96" type="image/png">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            top: 0;
+            height: 100vh;
+            width: 100vw;
+            position: fixed;
+            z-index: -5;
+        }
+
+        #div {
+            display: block;
+        }
+
+        .mapboxgl-map,
+        .maplibregl-map {
+            font: 12px/20px Helvetica Neue, Arial, Helvetica, sans-serif;
+            overflow: hidden;
+            position: relative;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        }
+
+        .jss1 {
+            background-color: rgb(12, 12, 12);
+            right: 0;
+        }
+
+        .MuiGrid-grid-xs-5 {
+            flex-grow: 0;
+            max-width: 41.666667%;
+            flex-basis: 41.666667%;
+        }
+
+        .MuiGrid-item {
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        .MuiTypography-root {
+            margin: 0;
+        }
+
+        .MuiTypography-h6 {
+            font-size: 22px;
+            font-family: "Noto Sans Thai", sans-serif;
+            font-weight: 400;
+            line-height: 29.96px;
+        }
+
+        .MuiTypography-subtitle2 {
+            font-size: 18px;
+            font-family: "Noto Sans Thai", sans-serif;
+            font-weight: 400;
+            line-height: 24.52px;
+        }
+
+        .btn {
+            background-color: #f7ad88;
+            border: none;
+            color: black;
+            padding: 12px 16px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            margin: 0;
+        }
+
+        /* Darker background on mouse-over */
+        .btn:hover {
+            background-color: #f38c58;
+        }
+    </style>
+    <style>
+        .chartWrapper {
+            position: relative;
+            background-color: rgb(12, 12, 12);
+        }
+
+        .chartWrapper>canvas {
+            position: absolute;
+            left: 0;
+            top: 0;
+            pointer-events: none;
+        }
+
+        .chartAreaWrapper {
+            /* height: 900px; */
+            /* overflowz: scroll; */
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map" style="width: 60%" class="maplibregl-map mapboxgl-map"></div>
+
+    <button class="btn MuiTypography-subtitle2" style="font-size:17px" onclick="history.back()"><i
+            class="fa fa-arrow-left" style="font-size:20px;"></i>&ensp;ย้อนกลับ</button>
+
+    <div class="" style="
+        background-color: rgb(12, 12, 12);
+        right: 0px;
+        width: 40%;
+        position: absolute;
+        height: 100%;
+      ">
+        <div style="padding: 15px">
+            <h1 class="MuiTypography-root MuiTypography-h6" style="color: white; font-size: 28px">
+                แผนที่การกระจายตัวของประชากรในจังหวัดขอนแก่น
+            </h1>
+            <br>
+            <hr>
+            <br>
+            <h6 class="MuiTypography-root MuiTypography-h6" style="color: white">
+                รายงานความหนาแน่นของประชากรแต่ละอำเภอ
+            </h6>
+        </div>
+        <div class="chartWrapper">
+            <div id="AreaWrapper" class="chartAreaWrapper">
+                <canvas id="barChart" style="width: 100%; margin-left: 10px"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.0/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <script></script>
+
+    <script>
+        // แบ่งสีตามโหมด - Natural break
+        var map = new maplibregl.Map({
+            container: "map", // container id
+            style: "https://big-edu.vallarismaps.com/core/api/styles/1.0-beta/styles/62b972b3ef184cb2226a2e59?api_key=wNPQJuGmx1V3KNf46GKUWHwLoEd3oX22t1sdfmUwgKyxgXbOf3AX8gWDn6w4axRT", // style URL
+
+            bounds: [
+                [101.914673, 15.739388],
+                [103.084717, 16.820316],
+            ],
+            pitch: 60, // tilt map
+        });
+
+        const dataLabel = [];
+        const dataPercent = [];
+        const dataColor = [];
+        //create chart
+        const myChart = new Chart(
+            document.getElementById("barChart").getContext("2d"), {
+            type: "bar",
+            data: {
+                labels: dataLabel,
+                datasets: [{
+                    data: dataPercent,
+                    backgroundColor: "#f59e72",
+                    datalabels: {
+                        color: "white",
+                        anchor: "end",
+                        align: "end",
+                        offset: 20,
+                        formatter: function (value, context) {
+                            return (
+                                "≈ " + Math.ceil(context.chart.data.datasets[0].data[
+                                    context.dataIndex
+                                ] * 5) + " คน/ตร.กม."
+                            );
+                        },
+                    },
+                },],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: "y",
+                plugins: {
+                    legend: false,
+                    tooltip: false,
+                    datalabels: {
+                        color: "white",
+                        font: {
+                            weight: "bold",
+                            size: "15px",
+                        },
+                        offset: 0,
+                        padding: 0,
+                    },
+                },
+                scales: {
+                    y: {
+                        display: true,
+                        Color: "white",
+                    },
+                    x: {
+                        display: false,
+                        labels: {
+                            Color: "white",
+                        },
+                        min: 0,
+                        max: 120,
+                        ticks: {
+                            stepSize: 20,
+                        },
+                    },
+                },
+                hover: {
+                    mode: null,
+                },
+            },
+            plugins: [ChartDataLabels],
+        }
+        );
+
+        map.on("idle", function (e) {
+            const mapEvent = e.target;
+            const currentZoom = mapEvent.getZoom();
+            const canvasContainer = mapEvent.getCanvas();
+            dataLabel.length = 0;
+            dataPercent.length = 0;
+            const features = mapEvent.queryRenderedFeatures(
+
+                [
+                    [0, 0],
+                    [
+                        Number(canvasContainer.offsetWidth),
+                        Number(canvasContainer.offsetHeight),
+                    ],
+
+                ],
+                {
+                    layers: ["pop_per_area"],
+                }
+            );
+            // console.log("This is feature")
+            // console.log(features);
+
+            const newData = features.map((f) => ({
+                amphoe: f.properties.amp_name_t,
+                ratio: f.properties.pop_per_area,
+                // ...f.properties,
+                color: f.layer.paint["fill-color"],
+            }));
+            // console.log("This is new data")
+            // console.log(newData);
+
+            var popRatio = [];
+            newData.reduce(function (res, value) {
+                if (!res[value.amphoe]) {
+                    res[value.amphoe] = { amphoe: value.amphoe, ratio: value.ratio };
+                    popRatio.push(res[value.amphoe])
+                }
+                return res;
+            }, {});
+            // console.log("Result!!")
+            // console.log(popRatio)
+
+            const x = popRatio.sort((a, b) => (a.ratio < b.ratio && 1) || -1);
+            console.log("Sorted!!")
+            console.log(x)
+
+            const mapX = x.map((e) => {
+                dataLabel.push(e.amphoe);
+                dataPercent.push(e.ratio / 5);
+            });
+            // console.log("MapX!!")
+            // console.log(mapX)
+
+            document.getElementById("AreaWrapper").style.height = `${x.length * 35
+                }px`;
+            myChart.update();
+
+        });
+    </script>
+</body>
+
+</html>

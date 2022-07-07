@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>CAN RUN - หน้าหลัก</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Boogaloo&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://unpkg.com/maplibre-gl@2.1.7/dist/maplibre-gl.js"></script>
+    <link href="https://unpkg.com/maplibre-gl@2.1.7/dist/maplibre-gl.css" rel="stylesheet" />
+    <link rel="icon" href="/favicon.png" sizes="96x96" type="image/png">
+
+    <style>
+        .button {
+            border-radius: 25px;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            font-weight: 800;
+            margin: 4px 2px;
+            cursor: pointer;
+            width: 400px;
+            height: 120px;
+            box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+        }
+
+        .button1 {
+            background-color: #0eb198;
+        }
+
+        /* Green */
+        .button2 {
+            background-color: #008CBA;
+        }
+
+        /* Blue */
+
+        .MuiTypography-h6 {
+            font-size: 22px;
+            font-family: "Noto Sans Thai", sans-serif;
+            font-weight: 1300;
+            line-height: 29.96px;
+        }
+
+        .MuiTypography-subtitle2 {
+            font-size: 18px;
+            font-family: "Noto Sans Thai", sans-serif;
+            font-weight: 400;
+            line-height: 24.52px;
+        }
+
+        .Welcome {
+            /* font-family: "Lucida Console", "Courier New", monospace; */
+            font-family: 'Boogaloo', cursive;
+            font-size: 48px;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .flex-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            /* background-color: DodgerBlue; */
+        }
+
+        .flex-container>div {
+            /* background-color: #f1f1f1; */
+            width: 400px;
+            margin: 10px;
+            text-align: center;
+            line-height: 75px;
+            font-size: 30px;
+
+        }
+
+        /* Responsive layout - makes a one column-layout instead of a two-column layout */
+        @media (max-width: 800px) {
+            .flex-container>div {
+                flex: 100%;
+            }
+        }
+
+        img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 50%;
+        }
+
+        /* body {
+    background-image: url('dYJ2Ai.jpeg');
+    } */
+
+        .center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            /* border: 3px solid green;  */
+        }
+
+        #map {
+            top: 0;
+            height: 100vh;
+            width: 100vw;
+            position: fixed;
+            z-index: -5;
+        }
+
+        .mapboxgl-map,
+        .maplibregl-map {
+            font: 12px/20px Helvetica Neue, Arial, Helvetica, sans-serif;
+            overflow: hidden;
+            position: relative;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        }
+    </style>
+
+    <!-- Just an image -->
+    <!-- <nav class="navbar navbar-light" style="background-color: #f8f4f4;">
+        <a class="navbar-brand" href="#">
+        <img src="logo.png" alt="CAN RUN" style="width:110px;height:35px;">
+        </a>
+    </nav> -->
+
+</head>
+
+<body>
+    <div id="map" style="width: 100%" class="maplibregl-map mapboxgl-map"></div>
+    <img src="logo1.png" alt="logo" style="width:230px; height:120px;">
+    <h1 class="Welcome">Welcome to Smart City Innovation by CAN RUN</h1>
+    <h6 class="MuiTypography-root MuiTypography-h6"
+        style="font-weight: bold; text-align: center;margin-top:20px;margin-bottom: 50px;">
+        พื้นที่ศึกษา เทศบาลนครขอนแก่น จังหวัดขอนแก่น
+    </h6>
+
+    <div class="flex-container">
+        <div>
+            <form action="building.html">
+                <button
+                    class="button button1 MuiTypography-root MuiTypography-h6">ความหนาแน่นของประชากรต่ออาคาร</button>
+            </form>
+        </div>
+
+        <div>
+            <form action="population.html">
+                <button class="button button2 MuiTypography-root MuiTypography-h6">การกระจายตัวของประชากร</button>
+            </form>
+        </div>
+    </div>
+    <div class="flex-container">
+        <div>
+            <form action="tmd.html">
+                <button class="button button2 MuiTypography-root MuiTypography-h6">สภาพอากาศ</button>
+            </form>
+        </div>
+
+        <div>
+            <form action="aqi.html">
+                <button class="button button1 MuiTypography-root MuiTypography-h6">คุณภาพอากาศ</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="flex-container" style="margin-top:25px;margin-bottom:80px;">
+        <div class="center">
+            <p class="MuiTypography-root MuiTypography-h6" style="font-weight: bold; font-size: 25px; text-align: center; text-shadow: 
+            1px 0px 1px #d9d9d9, 0px 1px 1px #f2f2f2, 
+            2px 1px 1px #d9d9d9, 1px 2px 1px #f2f2f2,
+            3px 2px 1px #d9d9d9, 2px 3px 1px #f2f2f2,
+            4px 3px 1px #d9d9d9, 3px 4px 1px #f2f2f2,
+            5px 4px 1px #d9d9d9, 4px 5px 1px #f2f2f2,
+            6px 5px 1px #d9d9d9, 5px 6px 1px #f2f2f2,
+            7px 6px 1px #d9d9d9;">สแกนเพื่อรับการแจ้งเตือนจาก<br><span style="color:#4CAF50">LINE Notify</span>!</p>
+        </div>
+        <div class="center">
+            <img src="can_run_group.jpg" alt="line_qr_code" style="width:210px; height:210px;">
+        </div>
+
+    </div>
+
+    <script>
+        var map = new maplibregl.Map({
+            container: "map", // container id
+            style: "https://big-edu.vallarismaps.com/core/api/styles/1.0-beta/styles/62b433fd2a7838fd0799caa8?api_key=wNPQJuGmx1V3KNf46GKUWHwLoEd3oX22t1sdfmUwgKyxgXbOf3AX8gWDn6w4axRT", // style URL
+
+            // bounds: [ // Khon Kaen city area bbox
+            // [102.766113, 16.388167],
+            // [102.919407, 16.509504],
+            // ],
+            center: [102.828641, 16.439502],
+            zoom: 10,
+            pitch: 60, // tilt map
+            bearing: -30, // bearing in degrees
+        });
+
+        function rotateCamera(timestamp) {
+            // clamp the rotation between 0 -360 degrees
+            // Divide timestamp by 100 to slow rotation to ~10 degrees / sec
+            map.rotateTo((timestamp / 500) % 160, { duration: 0 });
+            // Request the next frame of the animation.
+            requestAnimationFrame(rotateCamera);
+        }
+
+        map.on('load', function () {
+            // Start the animation.
+            rotateCamera(0);
+
+
+        });
+    </script>
+</body>
+
+<footer class="text-center text-lg-start fixed-bottom" style="background-color: #21081a;">
+
+    <div class="text-center p-3 text-white">
+        For
+        <a class="text-white" href="https://vallaris.kku.ac.th/">Smart City Innovation Challenge Using Open Geospatial
+            Platform</a>
+        2022 by Team CAN RUN
+    </div>
+</footer>
+
+</html>
