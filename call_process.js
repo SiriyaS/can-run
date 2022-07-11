@@ -23,7 +23,7 @@ async function callProcess(long, lat) {
             // console.log(jobID);
         },
         error: function (errMsg) {
-            alert(errMsg);
+            alert("Some error occurred while getting data, please try again later\n", errMsg);
         }
     });
 
@@ -42,7 +42,7 @@ async function callProcess(long, lat) {
                 status = response.status
             },
             error: function (errMsg) {
-                alert(errMsg);
+                alert("Some error occurred while getting data, please try again later\n", errMsg);
             }
         });
     }
@@ -62,7 +62,7 @@ async function callProcess(long, lat) {
             result_url = response[0].value.inlineValue
         },
         error: function (errMsg) {
-            alert(errMsg);
+            alert("Some error occurred while getting data, please try again later\n", errMsg);
         }
     });
 
@@ -76,7 +76,7 @@ async function callProcess(long, lat) {
             json_result = response
         },
         error: function (errMsg) {
-            alert(errMsg);
+            alert("Some error occurred while getting data, please try again later\n", errMsg);
         }
     });
     return json_result;
